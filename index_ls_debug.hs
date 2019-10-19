@@ -53,17 +53,17 @@ sub_index0 code_in code_out i limit c =
       sub_index2_ = sub_index2 code_in (i + 3) (i + 3)
       sub_index3_ = sub_index3 code_in (i - 3) (i - 3) (-1)
       sub_index4_ = sub_index4 code_in (i + 4) (i + 4) 1
-      os = SEQ.fromList "(sub_i "
+      op = SEQ.fromList " !! "
       sp = SEQ.singleton ' '
-      cs = SEQ.singleton ')'
+      left_tuple = \x -> SEQ.fromList "(" SEQ.>< x SEQ.>< SEQ.fromList ", " SEQ.>< SEQ.fromList (show c) SEQ.>< SEQ.fromList ")"
       diff_i = (SEQ.length code_out) - i
   in
   if i > limit then (code_out, c)
   else if code_in ! i == '!' && code_in ! (i + 1) == '!' && code_in ! (i - 1) == ' ' && code_in ! (i + 2) == ' ' then
-    if code_in ! (i - 2) /= ')' && code_in ! (i + 3) /= '(' then sub_index0 code_in (SEQ.take (i - (snd sub_index1_) - 1 + diff_i) code_out SEQ.>< os SEQ.>< SEQ.fromList (show c) SEQ.>< sp SEQ.>< fst sub_index1_ SEQ.>< sp SEQ.>< fst sub_index2_ SEQ.>< cs) (i + (snd sub_index2_) + 3) limit (c + 1)
-    else if code_in ! (i - 2) == ')' && code_in ! (i + 3) /= '(' then sub_index0 code_in (SEQ.take (i - (snd sub_index3_) - 3 + diff_i) code_out SEQ.>< os SEQ.>< SEQ.fromList (show c) SEQ.>< sp SEQ.>< fst sub_index3_ SEQ.>< sp SEQ.>< fst sub_index2_ SEQ.>< cs) (i + (snd sub_index2_) + 3) limit (c + 1)
-    else if code_in ! (i - 2) /= ')' && code_in ! (i + 3) == '(' then sub_index0 code_in (SEQ.take (i - (snd sub_index1_) - 1 + diff_i) code_out SEQ.>< os SEQ.>< SEQ.fromList (show c) SEQ.>< sp SEQ.>< fst sub_index1_ SEQ.>< sp SEQ.>< fst sub_index4_ SEQ.>< cs) (i + (snd sub_index4_) + 5) limit (c + 1)
-    else sub_index0 code_in (SEQ.take (i - (snd sub_index3_) - 3 + diff_i) code_out SEQ.>< os SEQ.>< SEQ.fromList (show c) SEQ.>< sp SEQ.>< fst sub_index3_ SEQ.>< sp SEQ.>< fst sub_index4_ SEQ.>< cs) (i + (snd sub_index4_) + 5) limit (c + 1)
+    if code_in ! (i - 2) /= ')' && code_in ! (i + 3) /= '(' then sub_index0 code_in (SEQ.take (i - (snd sub_index1_) - 1 + diff_i) code_out SEQ.>< left_tuple (fst sub_index1_) SEQ.>< op SEQ.>< fst sub_index2_) (i + (snd sub_index2_) + 3) limit (c + 1)
+    else if code_in ! (i - 2) == ')' && code_in ! (i + 3) /= '(' then sub_index0 code_in (SEQ.take (i - (snd sub_index3_) - 3 + diff_i) code_out SEQ.>< left_tuple (fst sub_index3_) SEQ.>< op SEQ.>< fst sub_index2_) (i + (snd sub_index2_) + 3) limit (c + 1)
+    else if code_in ! (i - 2) /= ')' && code_in ! (i + 3) == '(' then sub_index0 code_in (SEQ.take (i - (snd sub_index1_) - 1 + diff_i) code_out SEQ.>< left_tuple (fst sub_index1_) SEQ.>< op SEQ.>< fst sub_index4_) (i + (snd sub_index4_) + 5) limit (c + 1)
+    else sub_index0 code_in (SEQ.take (i - (snd sub_index3_) - 3 + diff_i) code_out SEQ.>< left_tuple (fst sub_index3_) SEQ.>< op SEQ.>< fst sub_index4_) (i + (snd sub_index4_) + 5) limit (c + 1)
   else sub_index0 code_in (code_out SEQ.>< SEQ.singleton (code_in ! i)) (i + 1) limit c
 
 main = do
