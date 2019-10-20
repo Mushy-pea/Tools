@@ -1,3 +1,7 @@
+-- This is an automation tool that substitutes occurances of Prelude.(!!) in Haskell code for a customised version that shows the location of
+-- "index too large" exceptions.  Written to deal with the perennial problem of the Haskell runtime reporting these exceptions without source
+-- code line numbers.  For an example of usage in a project see Mushy-pea/Game-Dangerous.
+
 module Main where
 
 import System.IO
@@ -7,10 +11,16 @@ import Data.Array
 import qualified Data.Sequence as SEQ
 import Data.Foldable
 
-sub_i :: Int -> [a] -> Int -> a
-sub_i location ls i =
-  if i >= length ls then error ("List index too large.  location: " ++ show location ++ " index: " ++ show i ++ " max: " ++ show ((length ls) - 1))
-  else ls !! i
+-- These two functions are placed in either the single module of the target program or in multiple module programs, one that is imported by all the targetted modules.
+
+-- This function is a wrapper for the Prelude.(!!) function, which shows where an index too large exception has happened.
+(!!) :: ([a], PREL.Int) -> PREL.Int -> a
+(ls, location) !! i =
+  if i PREL.>= PREL.length ls then PREL.error ("List index too large.  location: " PREL.++ PREL.show location PREL.++ " index: " PREL.++ PREL.show i PREL.++ " max: " PREL.++ PREL.show ((PREL.length ls) PREL.- 1))
+  else ls PREL.!! i
+
+-- The commenting out of these two functions can be inverted to switch off the debugging provided by the index wrapper system and save most of the runtime overhead.
+--(ls, location) !! i = ls PREL.!! i
 
 build_seq :: Array Int Char -> SEQ.Seq Char -> Int -> Int -> Bool -> SEQ.Seq Char
 build_seq whole part i limit step =
