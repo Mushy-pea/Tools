@@ -12,24 +12,24 @@ snd__ (a, b, c) = b
 third_ (a, b, c) = c
 
 class Sub_index i where
-  sub_i :: IArray a e => Int -> a i e -> i -> e
+  sub_j :: IArray a e => Int -> a i e -> i -> e
 
 instance Sub_index Int where
-  sub_i location arr i =
+  sub_j location arr i =
     let bd = bounds arr
     in
     if i < fst bd || i > snd bd then error ("Error in array index.  location: " ++ show location ++ " index: " ++ show i ++ " bounds: " ++ show bd)
     else arr ! i
 
 instance Sub_index (Int, Int) where
-  sub_i location arr (i0, i1) =
+  sub_j location arr (i0, i1) =
     let bd = bounds arr
     in
     if i0 < fst (fst bd) || i0 > fst (snd bd) || i1 < snd (fst bd) || i1 > snd (snd bd) then error ("Error in array index.  location: " ++ show location ++ " index: " ++ show (i0, i1) ++ " bounds: " ++ show bd)
     else arr ! (i0, i1)
 
 instance Sub_index (Int, Int, Int) where
-  sub_i location arr (i0, i1, i2) =
+  sub_j location arr (i0, i1, i2) =
     let bd = bounds arr
     in
     if i0 < fst__ (fst bd) || i0 > fst__ (snd bd) || i1 < snd__ (fst bd) || i1 > snd__ (snd bd) || i2 < third_ (fst bd) || i2 > third_ (snd bd) then error ("Error in array index.  location: " ++ show location ++ " index: " ++ show (i0, i1, i2) ++ " bounds: " ++ show bd)
@@ -76,7 +76,7 @@ sub_index0 code_in code_out i limit c =
       sub_index2_ = sub_index2 code_in (i + 2) (i + 2)
       sub_index3_ = sub_index3 code_in (i - 3) (i - 3) (-1)
       sub_index4_ = sub_index4 code_in (i + 3) (i + 3) 1
-      os = SEQ.fromList "(sub_i "
+      os = SEQ.fromList "(sub_j "
       sp = SEQ.singleton ' '
       cs = SEQ.singleton ')'
       diff_i = (SEQ.length code_out) - i
